@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'com.adarshr.test-logger' version '3.0.0'
+}
+
+group 'net.liccioni'
+version '1.0-SNAPSHOT'
+apply plugin: 'maven'
+
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation "io.vavr:vavr:0.10.3"
+
+    testImplementation("org.assertj:assertj-core:3.19.0")
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+testlogger {
+    theme 'mocha'
+}
