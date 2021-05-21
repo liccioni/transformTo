@@ -13,7 +13,7 @@ class DefaultObserverTest {
 
     @BeforeEach
     void setUp() {
-        DefaultTransformer.INSTANCE.clear();
+        DefaultObserver.INSTANCE.clear();
     }
 
     @Test
