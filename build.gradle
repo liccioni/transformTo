@@ -1,15 +1,13 @@
 plugins {
     id 'java'
-    id 'maven-publish'
+    id 'maven'
     id 'com.adarshr.test-logger' version '3.0.0'
 }
 
 group 'net.liccioni'
 version '1.0-SNAPSHOT'
 
-apply {
-    'maven-publish'
-}
+//apply plugin: 'maven'
 
 allprojects {
     repositories {
