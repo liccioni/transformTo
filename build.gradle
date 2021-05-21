@@ -7,6 +7,10 @@ plugins {
 group 'net.liccioni'
 version '1.0-SNAPSHOT'
 
+apply {
+    'maven-publish'
+}
+
 allprojects {
     repositories {
         maven { url 'https://jitpack.io' }
