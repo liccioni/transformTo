@@ -8,26 +8,21 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-enum DefaultObserver {
-
-    INSTANCE;
+class DefaultObserver implements Observable {
 
     private final Map<Class<?>, Collection<Consumer<Object>>> subscribers = new ConcurrentHashMap<>();
 
-    private <T> Subscription on(Class<T> eventType, Consumer<T> subscriber) {
+    @Override
+    public <T> Subscription register(Class<T> eventType, Consumer<T> subscriber) {
         Consumer<Object> subscription = event -> subscriber.accept(eventType.cast(event));
         Collection<Consumer<Object>> subscriptions = subscribers.computeIfAbsent(eventType, _eventType -> new ArrayList<>());
         subscriptions.add(subscription);
         return () -> subscriptions.remove(subscription);
     }
 
-    private <T> Observable<T> on(Class<T> eventType) {
-        return subscriber -> on(eventType, subscriber);
-    }
-
-    private <T> void send(T event) {
+    @Override
+    public <T> void send(T event) {
         subscribers.entrySet().stream()
                 .filter(entry -> canHandle(event.getClass(), entry.getKey()))
                 .map(Map.Entry::getValue)
@@ -38,17 +33,5 @@ enum DefaultObserver {
 
     private boolean canHandle(Class<?> eventType, Class<?> handlerType) {
         return handlerType.isAssignableFrom(eventType);
-    }
-
-    protected static <T> Function<Class<T>, Observable<T>> getRegistry() {
-        return INSTANCE::on;
-    }
-
-    protected static <T> Consumer<T> getSender() {
-        return INSTANCE::send;
-    }
-
-    void clear() {
-        INSTANCE.subscribers.clear();
     }
 }

@@ -24,16 +24,18 @@ Gradle.
 
 class Application {
     public static void main(String[] args) {
-        
-        Transformable.register(String.class, Float.class, Float::parseFloat);
-        Transformable aNumber = Transformable.toTransformable("42");
+
+        TransformerFactory factory = TransformerFactory.create();
+        factory.register(String.class, Float.class, Float::parseFloat);
+        Transformable aNumber = factory.toTransformable("42");
         Float actual = aNumber.transformTo(Float.class);
         Float expected = 42f;
         assertThat(actual).isEqualTo(expected);
 
+        Observable observable = Observable.create();
         AtomicReference<String> actual = new AtomicReference<>();
-        Observable.register(String.class).then(actual::set);
-        Observable.send("hello!");
+        observable.register(String.class, actual::set);
+        observable.send("hello!");
         assertThat(actual.get()).isEqualTo("hello!");
     }
 }

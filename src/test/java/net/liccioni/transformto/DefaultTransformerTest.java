@@ -1,28 +1,24 @@
 package net.liccioni.transformto;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DefaultTransformerTest {
 
-    @BeforeEach
-    void setUp() {
-        DefaultTransformer.INSTANCE.clear();
-    }
-
     @Test
     void shouldReturnNullIfNoAdapter() {
-        Transformable aNumber = Transformable.toTransformable("42");
+        TransformerFactory factory = TransformerFactory.create();
+        Transformable aNumber = factory.toTransformable("42");
         Float actual = aNumber.transformTo(Float.class);
         assertThat(actual).isNull();
     }
 
     @Test
     void shouldTransformStringToFloat() {
-        Transformable.register(String.class, Float.class, Float::parseFloat);
-        Transformable aNumber = Transformable.toTransformable("42");
+        TransformerFactory factory = TransformerFactory.create();
+        factory.register(String.class, Float.class, Float::parseFloat);
+        Transformable aNumber = factory.toTransformable("42");
         Float actual = aNumber.transformTo(Float.class);
         Float expected = 42f;
         assertThat(actual).isEqualTo(expected);
@@ -30,9 +26,10 @@ class DefaultTransformerTest {
 
     @Test
     void shouldOverrideTransformer() {
-        Transformable.register(String.class, Float.class, Float::parseFloat);
-        Transformable.register(String.class, Float.class, string -> 42f);
-        Transformable aNumber = Transformable.toTransformable("123.456");
+        TransformerFactory factory = TransformerFactory.create();
+        factory.register(String.class, Float.class, Float::parseFloat);
+        factory.register(String.class, Float.class, string -> 42f);
+        Transformable aNumber = factory.toTransformable("123.456");
         Float actual = aNumber.transformTo(Float.class);
         Float expected = 42f;
         assertThat(actual).isEqualTo(expected);
@@ -40,9 +37,10 @@ class DefaultTransformerTest {
 
     @Test
     void shouldTransformDifferentTargets() {
-        Transformable.register(String.class, Float.class, Float::parseFloat);
-        Transformable.register(String.class, Integer.class, Integer::parseInt);
-        Transformable aNumber = Transformable.toTransformable("42");
+        TransformerFactory factory = TransformerFactory.create();
+        factory.register(String.class, Float.class, Float::parseFloat);
+        factory.register(String.class, Integer.class, Integer::parseInt);
+        Transformable aNumber = factory.toTransformable("42");
         Float actualFloat = aNumber.transformTo(Float.class);
         Float expectedFloat = 42f;
         assertThat(actualFloat).isEqualTo(expectedFloat);
@@ -53,8 +51,9 @@ class DefaultTransformerTest {
 
     @Test
     void shouldReturnNullAfterUnsubscribe() {
-        Subscription subscription = Transformable.register(String.class, Float.class, Float::parseFloat);
-        Transformable aNumber = Transformable.toTransformable("42");
+        TransformerFactory factory = TransformerFactory.create();
+        Subscription subscription = factory.register(String.class, Float.class, Float::parseFloat);
+        Transformable aNumber = factory.toTransformable("42");
         Float actual = aNumber.transformTo(Float.class);
         assertThat(actual).isNotNull();
         subscription.remove();
